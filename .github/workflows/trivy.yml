@@ -1,48 +1,42 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: trivy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '21 7 * * 2'
+    - cron: "21 7 * * 2"
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    name: Build
+  scan:
+    name: Trivy filesystem scan
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build an image from Dockerfile
-        run: |
-          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
-
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy filesystem scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
+          ignore-unfixed: true
 
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
+        if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
