@@ -9,6 +9,7 @@ Currently, this repository is maintained as a learning and practice workspace fo
 If you discover a security issue in this repository, please report it privately and responsibly.
 
 Please contact the repository maintainer via GitHub or email and include:
+
 - a clear description of the vulnerability
 - steps to reproduce it
 - any relevant proof-of-concept or logs
@@ -21,6 +22,7 @@ We will review reports as soon as possible and work toward a fix or mitigation p
 ## Security Best Practices
 
 When contributing to this repository:
+
 - do not commit secrets, API keys, tokens, or credentials
 - avoid uploading personal or sensitive information
 - keep dependencies updated when possible
